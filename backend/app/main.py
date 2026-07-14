@@ -17,6 +17,8 @@ origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     frontend_url,
+    frontend_url.rstrip("/"),
+    "https://followmyexpense.netlify.app"
 ]
 
 app.add_middleware(
