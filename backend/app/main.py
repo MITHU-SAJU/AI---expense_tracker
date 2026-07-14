@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database.mongodb import db
@@ -9,8 +10,13 @@ app = FastAPI(
     description="Backend API for AI Expense Tracker",
     version="1.0.0"
 )
+
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
 origins = [
     "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    frontend_url,
 ]
 
 app.add_middleware(
