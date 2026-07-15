@@ -83,10 +83,9 @@ body {
 
 .bottom-nav-inner {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
-  position: relative;
-  padding: 0 1rem;
+  padding: 0.5rem;
 }
 
 .bottom-nav-item {
@@ -96,7 +95,7 @@ body {
   align-items: center;
   font-size: 0.75rem;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0;
   flex: 1;
 }
 
@@ -104,29 +103,26 @@ body {
   color: #FFF;
 }
 
-.mic-btn-container {
-  position: absolute;
-  top: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #FDFBF7;
-  border-radius: 50%;
-  padding: 5px;
-  z-index: 10;
-}
-
-.mic-btn {
-  background: linear-gradient(135deg, #8D6E63 0%, #5D4037 100%);
+.nav-icon-circle {
   width: 50px;
   height: 50px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
+  background: rgba(255, 255, 255, 0.05);
+  margin-bottom: 4px;
+  transition: all 0.2s ease;
+}
+
+.bottom-nav-item.active .nav-icon-circle {
+  background: linear-gradient(135deg, #8D6E63 0%, #5D4037 100%);
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  cursor: pointer;
-  border: none;
+}
+
+.mic-btn-circle {
+  background: linear-gradient(135deg, #8D6E63 0%, #5D4037 100%);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 /* Card Styling */

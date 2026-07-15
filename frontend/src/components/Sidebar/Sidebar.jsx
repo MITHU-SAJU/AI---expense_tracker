@@ -35,35 +35,32 @@ function Sidebar({ currentPage, setCurrentPage, onMicClick }) {
             className={`bottom-nav-item ${currentPage === 'home' ? 'active' : ''}`}
             onClick={() => setCurrentPage('home')}
           >
-            <span style={{ fontSize: '1.25rem' }}>🏠</span>
-            Home
+            <div className="nav-icon-circle">🏠</div>
+            <span>Home</span>
           </div>
           
           <div 
             className={`bottom-nav-item ${currentPage === 'charts' ? 'active' : ''}`}
             onClick={() => setCurrentPage('charts')}
           >
-            <span style={{ fontSize: '1.25rem' }}>📊</span>
-            Charts
+            <div className="nav-icon-circle">📊</div>
+            <span>Charts</span>
           </div>
           
-          {/* Centered floating mic/AI button for adding expenses */}
-          <div className="mic-btn-container">
-            <button 
-              className="mic-btn shadow-sm"
-              onClick={onMicClick}
-            >
-              🎤
-            </button>
+          <div 
+            className="bottom-nav-item"
+            onClick={onMicClick}
+          >
+            <div className="nav-icon-circle mic-btn-circle" style={{ color: 'white' }}>🎤</div>
+            <span>Voice</span>
           </div>
-          <div style={{ width: '40px' }}></div> {/* Spacer for middle button layout balance if needed, or flex handles it */}
 
           <div 
             className={`bottom-nav-item ${currentPage === 'chatbot' ? 'active' : ''}`}
             onClick={() => setCurrentPage('chatbot')}
           >
-            <span style={{ fontSize: '1.25rem' }}>🤖</span>
-            Chat
+            <div className="nav-icon-circle">🤖</div>
+            <span>Chat</span>
           </div>
         </div>
       </div>
