@@ -125,8 +125,9 @@ async def webauthn_register_generate(request: Request, current_user: dict = Depe
         {"$set": {"current_challenge": challenge_b64}}
     )
     
+    from webauthn import options_to_json
     import json
-    return json.loads(options.json())
+    return json.loads(options_to_json(options))
 
 @router.post("/webauthn/register/verify")
 async def webauthn_register_verify(request: Request, credential: dict, current_user: dict = Depends(get_current_user)):
@@ -195,8 +196,9 @@ async def webauthn_login_generate(request: Request, username: str):
         {"$set": {"current_challenge": challenge_b64}}
     )
     
+    from webauthn import options_to_json
     import json
-    return json.loads(options.json())
+    return json.loads(options_to_json(options))
 
 @router.post("/webauthn/login/verify")
 async def webauthn_login_verify(request: Request, username: str, credential: dict):
