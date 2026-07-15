@@ -1,6 +1,8 @@
 import os
-from fastapi import FastAPI
+import traceback
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from app.database.mongodb import db
 from app.api.expenses import router as expense_router
 from app.api.ai import router as ai_router
@@ -12,23 +14,27 @@ app = FastAPI(
     version="1.0.0"
 )
 
-frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
-
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    frontend_url,
-    frontend_url.rstrip("/"),
-    "https://followmyexpense.netlify.app"
-]
-
+# CORS: allow every origin. This is safe because we use Bearer tokens
+# (Authorization header), NOT cookies. allow_credentials is False so
+# the browser will accept Access-Control-Allow-Origin: *.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Global exception handler – ensures that even unhandled 500 errors
+# return a proper JSON body instead of crashing without CORS headers.
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    traceback.print_exc()          # still prints the traceback to Render logs
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Internal server error: {str(exc)}"},
+    )
+
 app.include_router(auth_router)
 app.include_router(expense_router)
 app.include_router(ai_router)
