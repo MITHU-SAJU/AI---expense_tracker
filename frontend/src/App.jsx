@@ -5,10 +5,12 @@ import Layout from "./components/Layout/Layout";
 import Home from "./pages/Home";
 import Chatbot from "./pages/Chatbot";
 import ChartsPage from "./pages/ChartsPage";
+import VoiceModal from "./components/VoiceModal/VoiceModal";
 
 function App() {
   const [refresh, setRefresh] = useState(false);
   const [currentPage, setCurrentPage] = useState("home");
+  const [showVoiceModal, setShowVoiceModal] = useState(false);
 
   const reloadExpenses = () => {
     setRefresh(!refresh);
@@ -16,7 +18,11 @@ function App() {
 
   return (
     <div className="app-container">
-      <Sidebar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      <Sidebar 
+        currentPage={currentPage} 
+        setCurrentPage={setCurrentPage} 
+        onMicClick={() => setShowVoiceModal(true)} 
+      />
 
       <Layout>
         {currentPage === "home" && (
@@ -29,6 +35,12 @@ function App() {
           <Chatbot />
         )}
       </Layout>
+
+      <VoiceModal 
+        show={showVoiceModal} 
+        onHide={() => setShowVoiceModal(false)} 
+        reloadExpenses={reloadExpenses} 
+      />
     </div>
   );
 }

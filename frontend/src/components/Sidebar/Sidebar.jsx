@@ -1,6 +1,6 @@
 import React from "react";
 
-function Sidebar({ currentPage, setCurrentPage }) {
+function Sidebar({ currentPage, setCurrentPage, onMicClick }) {
   return (
     <>
       {/* Desktop Sidebar */}
@@ -38,7 +38,7 @@ function Sidebar({ currentPage, setCurrentPage }) {
             <span style={{ fontSize: '1.25rem' }}>🏠</span>
             Home
           </div>
-          <div style={{ width: '50px' }}></div> {/* Spacer for middle button */}
+          
           <div 
             className={`bottom-nav-item ${currentPage === 'charts' ? 'active' : ''}`}
             onClick={() => setCurrentPage('charts')}
@@ -47,14 +47,23 @@ function Sidebar({ currentPage, setCurrentPage }) {
             Charts
           </div>
           
-          {/* Centered floating mic/AI button */}
+          {/* Centered floating mic/AI button for adding expenses */}
           <div className="mic-btn-container">
             <button 
-              className="mic-btn"
-              onClick={() => setCurrentPage('chatbot')}
+              className="mic-btn shadow-sm"
+              onClick={onMicClick}
             >
               🎤
             </button>
+          </div>
+          <div style={{ width: '40px' }}></div> {/* Spacer for middle button layout balance if needed, or flex handles it */}
+
+          <div 
+            className={`bottom-nav-item ${currentPage === 'chatbot' ? 'active' : ''}`}
+            onClick={() => setCurrentPage('chatbot')}
+          >
+            <span style={{ fontSize: '1.25rem' }}>🤖</span>
+            Chat
           </div>
         </div>
       </div>

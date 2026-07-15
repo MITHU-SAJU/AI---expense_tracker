@@ -6,12 +6,14 @@ body {
   color: #4E342E; /* Deep brown */
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
 
 /* Layout Container */
 .app-container {
   display: flex;
   min-height: 100vh;
+  width: 100%;
 }
 
 .main-content {
@@ -19,6 +21,7 @@ body {
   padding: 2rem;
   margin-left: 250px; /* Space for desktop sidebar */
   transition: margin-left 0.3s;
+  max-width: 100vw;
 }
 
 /* Sidebar Styles (Desktop) */
@@ -80,9 +83,10 @@ body {
 
 .bottom-nav-inner {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   position: relative;
+  padding: 0 1rem;
 }
 
 .bottom-nav-item {
@@ -93,6 +97,7 @@ body {
   font-size: 0.75rem;
   cursor: pointer;
   padding: 0.5rem;
+  flex: 1;
 }
 
 .bottom-nav-item.active {
@@ -107,6 +112,7 @@ body {
   background: #FDFBF7;
   border-radius: 50%;
   padding: 5px;
+  z-index: 10;
 }
 
 .mic-btn {
