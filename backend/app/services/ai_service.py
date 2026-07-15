@@ -1,15 +1,8 @@
 import os
 import json
-from openai import OpenAI
+from google import genai
+from google.genai import types
 from pydantic import BaseModel, Field
-
-# Initialize OpenAI client
-client = None
-if os.environ.get("OPENAI_API_KEY"):
-    try:
-        client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-    except Exception:
-        pass
 
 class ParsedExpense(BaseModel):
     amount: float = Field(description="The numeric amount of the expense or income.")
@@ -18,26 +11,30 @@ class ParsedExpense(BaseModel):
     type: str = Field(description="Either 'expense' or 'income'")
 
 def parse_expense_text(text: str) -> dict:
-    if not client:
-        return {"error": "AI not configured. Missing OPENAI_API_KEY"}
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        return {"error": "AI not configured. Missing GEMINI_API_KEY"}
         
     try:
-        completion = client.beta.chat.completions.parse(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "Extract the expense details from the user's statement."},
-                {"role": "user", "content": text}
-            ],
-            response_format=ParsedExpense,
+        client = genai.Client(api_key=api_key)
+        prompt = "Extract the expense details from the user's statement."
+        
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=f"{prompt}\n\nUser statement: {text}",
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                response_schema=ParsedExpense
+            )
         )
-        # return as dict
-        return completion.choices[0].message.parsed.model_dump()
+        return json.loads(response.text)
     except Exception as e:
         return {"error": str(e)}
 
 def get_ai_chat_response(prompt: str, expenses_context: list) -> str:
-    if not client:
-        return "AI not configured. Missing OPENAI_API_KEY"
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        return "AI not configured. Missing GEMINI_API_KEY"
         
     # Format recent expenses for context
     context_str = "Recent Expenses Context:\n"
@@ -53,13 +50,14 @@ Be concise and helpful.
 {context_str}
 """
     try:
-        completion = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompt}
-            ]
+        client = genai.Client(api_key=api_key)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                system_instruction=system_prompt,
+            )
         )
-        return completion.choices[0].message.content
+        return response.text
     except Exception as e:
         return f"Error: {str(e)}"
