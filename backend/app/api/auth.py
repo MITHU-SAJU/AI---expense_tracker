@@ -1,5 +1,5 @@
 import os
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from app.database.mongodb import db
@@ -92,12 +92,17 @@ async def read_users_me(current_user: dict = Depends(get_current_user)):
 
 # WEBAUTHN REGISTRATION
 @router.get("/webauthn/register/generate")
-async def webauthn_register_generate(current_user: dict = Depends(get_current_user)):
+async def webauthn_register_generate(request: Request, current_user: dict = Depends(get_current_user)):
     user_id = str(current_user["_id"])
+    
+    req_origin = request.headers.get("origin") or ORIGIN
+    from urllib.parse import urlparse
+    parsed = urlparse(req_origin)
+    req_rp_id = parsed.hostname or RP_ID
     
     # Generate random bytes for user ID if needed, or use string
     options = generate_registration_options(
-        rp_id=RP_ID,
+        rp_id=req_rp_id,
         rp_name=RP_NAME,
         user_id=user_id.encode('utf-8'),
         user_name=current_user["username"],
@@ -120,22 +125,26 @@ async def webauthn_register_generate(current_user: dict = Depends(get_current_us
         {"$set": {"current_challenge": challenge_b64}}
     )
     
-    # Options object to dict isn't straightforward without a helper in v3 usually
     import json
     return json.loads(options.json())
 
 @router.post("/webauthn/register/verify")
-async def webauthn_register_verify(credential: dict, current_user: dict = Depends(get_current_user)):
+async def webauthn_register_verify(request: Request, credential: dict, current_user: dict = Depends(get_current_user)):
     expected_challenge_b64 = current_user.get("current_challenge")
     if not expected_challenge_b64:
         raise HTTPException(status_code=400, detail="Challenge not found")
+        
+    req_origin = request.headers.get("origin") or ORIGIN
+    from urllib.parse import urlparse
+    parsed = urlparse(req_origin)
+    req_rp_id = parsed.hostname or RP_ID
         
     try:
         verification = verify_registration_response(
             credential=credential,
             expected_challenge=base64url_to_bytes(expected_challenge_b64),
-            expected_origin=ORIGIN,
-            expected_rp_id=RP_ID,
+            expected_origin=req_origin,
+            expected_rp_id=req_rp_id,
             require_user_verification=False
         )
         
@@ -161,13 +170,18 @@ async def webauthn_register_verify(credential: dict, current_user: dict = Depend
 
 # WEBAUTHN LOGIN
 @router.get("/webauthn/login/generate")
-async def webauthn_login_generate(username: str):
+async def webauthn_login_generate(request: Request, username: str):
     user = users_collection.find_one({"username": username})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
         
+    req_origin = request.headers.get("origin") or ORIGIN
+    from urllib.parse import urlparse
+    parsed = urlparse(req_origin)
+    req_rp_id = parsed.hostname or RP_ID
+        
     options = generate_authentication_options(
-        rp_id=RP_ID,
+        rp_id=req_rp_id,
         allow_credentials=[
             {"id": base64url_to_bytes(cred["credential_id"]), "type": "public-key"}
             for cred in user.get("webauthn_credentials", [])
@@ -185,10 +199,15 @@ async def webauthn_login_generate(username: str):
     return json.loads(options.json())
 
 @router.post("/webauthn/login/verify")
-async def webauthn_login_verify(username: str, credential: dict):
+async def webauthn_login_verify(request: Request, username: str, credential: dict):
     user = users_collection.find_one({"username": username})
     if not user or not user.get("current_challenge"):
         raise HTTPException(status_code=400, detail="Invalid user or challenge")
+        
+    req_origin = request.headers.get("origin") or ORIGIN
+    from urllib.parse import urlparse
+    parsed = urlparse(req_origin)
+    req_rp_id = parsed.hostname or RP_ID
         
     try:
         # Find the credential
@@ -203,8 +222,8 @@ async def webauthn_login_verify(username: str, credential: dict):
         verification = verify_authentication_response(
             credential=credential,
             expected_challenge=base64url_to_bytes(user["current_challenge"]),
-            expected_origin=ORIGIN,
-            expected_rp_id=RP_ID,
+            expected_origin=req_origin,
+            expected_rp_id=req_rp_id,
             credential_public_key=base64url_to_bytes(stored_cred["public_key"]),
             credential_current_sign_count=stored_cred["sign_count"],
             require_user_verification=False,
