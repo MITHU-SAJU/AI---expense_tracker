@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, Button, Card, InputGroup, Spinner, Alert, Row, Col } from "react-bootstrap";
+import { Form, Button, Card, Spinner, Alert, Row, Col, FloatingLabel } from "react-bootstrap";
 import { addExpense, parseTextWithAI } from "../../services/expenseService";
 
 function ExpenseForm({ reloadExpenses }) {
@@ -134,67 +134,63 @@ function ExpenseForm({ reloadExpenses }) {
         <Form onSubmit={handleSubmit}>
           <Row>
             <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Amount (₹)</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="amount"
-                  value={expense.amount}
-                  onChange={handleChange}
-                  placeholder="Enter amount"
-                  required
-                />
-              </Form.Group>
+                <FloatingLabel controlId="expenseAmount" label="Amount (₹)" className="mb-3">
+                  <Form.Control
+                    type="number"
+                    name="amount"
+                    value={expense.amount}
+                    onChange={handleChange}
+                    placeholder="Enter amount"
+                    required
+                  />
+                </FloatingLabel>
             </Col>
             <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Type</Form.Label>
-                <Form.Select
-                  name="type"
-                  value={expense.type}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="expense">Expense</option>
-                  <option value="income">Income</option>
-                </Form.Select>
-              </Form.Group>
+                <FloatingLabel controlId="expenseType" label="Type" className="mb-3">
+                  <Form.Select
+                    name="type"
+                    value={expense.type}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="expense">Expense</option>
+                    <option value="income">Income</option>
+                  </Form.Select>
+                </FloatingLabel>
             </Col>
           </Row>
 
           <Row>
             <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Category</Form.Label>
-                <Form.Select
-                  name="category"
-                  value={expense.category}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select Category</option>
-                  <option value="Food">Food</option>
-                  <option value="Petrol">Petrol</option>
-                  <option value="Shopping">Shopping</option>
-                  <option value="Salary">Salary</option>
-                  <option value="Bills">Bills</option>
-                  <option value="Entertainment">Entertainment</option>
-                  <option value="Others">Others</option>
-                </Form.Select>
-              </Form.Group>
+                <FloatingLabel controlId="expenseCategory" label="Category" className="mb-3">
+                  <Form.Select
+                    name="category"
+                    value={expense.category}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Category</option>
+                    <option value="Food">Food</option>
+                    <option value="Petrol">Petrol</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Salary">Salary</option>
+                    <option value="Bills">Bills</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Others">Others</option>
+                  </Form.Select>
+                </FloatingLabel>
             </Col>
             <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label>Description</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="description"
-                  value={expense.description}
-                  onChange={handleChange}
-                  placeholder="Example: Lunch"
-                  required
-                />
-              </Form.Group>
+                <FloatingLabel controlId="expenseDescription" label="Description" className="mb-3">
+                  <Form.Control
+                    type="text"
+                    name="description"
+                    value={expense.description}
+                    onChange={handleChange}
+                    placeholder="Example: Lunch"
+                    required
+                  />
+                </FloatingLabel>
             </Col>
           </Row>
 

@@ -24,23 +24,23 @@ function Dashboard({ refresh }) {
 
   return (
     <Row className="g-4 mb-4">
-      <Col md={4} sm={6}>
-        <SummaryCard title="Balance" value={`₹${stats.balance}`} />
+      <Col md={4} xs={6}>
+        <SummaryCard title="Balance" value={`₹${stats.balance}`} gradientClass="bg-gradient-1" />
       </Col>
-      <Col md={4} sm={6}>
-        <SummaryCard title="Total Income" value={`₹${stats.total_income}`} />
+      <Col md={4} xs={6}>
+        <SummaryCard title="Total Income" value={`₹${stats.total_income}`} gradientClass="bg-gradient-2" />
       </Col>
-      <Col md={4} sm={6}>
-        <SummaryCard title="Total Expenses" value={`₹${stats.total_expenses}`} />
+      <Col md={4} xs={6}>
+        <SummaryCard title="Total Expenses" value={`₹${stats.total_expenses}`} gradientClass="bg-gradient-3" />
       </Col>
-      <Col md={4} sm={6}>
-        <SummaryCard title="Today's Expenses" value={`₹${stats.today_expenses}`} />
+      <Col md={4} xs={6}>
+        <SummaryCard title="Today's Expenses" value={`₹${stats.today_expenses}`} gradientClass="bg-gradient-4" />
       </Col>
-      <Col md={4} sm={6}>
-        <SummaryCard title="This Month" value={`₹${stats.this_month_expenses}`} />
+      <Col md={4} xs={6}>
+        <SummaryCard title="This Month" value={`₹${stats.this_month_expenses}`} gradientClass="bg-gradient-5" />
       </Col>
-      <Col md={4} sm={6}>
-        <SummaryCard title="Total Transactions" value={stats.total_transactions} />
+      <Col md={4} xs={6}>
+        <SummaryCard title="Total Transactions" value={stats.total_transactions} gradientClass="bg-gradient-6" />
       </Col>
     </Row>
   );
