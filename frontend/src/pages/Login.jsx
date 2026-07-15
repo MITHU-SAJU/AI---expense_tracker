@@ -26,22 +26,18 @@ function Login({ setPage }) {
   };
 
   const handleWebAuthnLogin = async () => {
-    if (!username) {
-      setError('Please enter your username first for Fingerprint login.');
-      return;
-    }
     setError('');
     setLoading(true);
     try {
-      // 1. Get auth options from server
-      const res = await api.get(`/auth/webauthn/login/generate?username=${encodeURIComponent(username)}`);
+      // 1. Get generic auth options from server
+      const res = await api.get(`/auth/webauthn/login/generate`);
       const options = res.data;
 
       // 2. Pass options to browser authenticator
       const asseResp = await startAuthentication({ optionsJSON: options });
 
       // 3. Send response to server to verify
-      const verifyRes = await api.post(`/auth/webauthn/login/verify?username=${encodeURIComponent(username)}`, asseResp);
+      const verifyRes = await api.post(`/auth/webauthn/login/verify`, asseResp);
       
       login(verifyRes.data.access_token, verifyRes.data.username);
     } catch (err) {
