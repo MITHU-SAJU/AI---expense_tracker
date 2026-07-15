@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.database.mongodb import db
 from app.api.expenses import router as expense_router
 from app.api.ai import router as ai_router
+from app.api.auth import router as auth_router
 
 app = FastAPI(
     title="AI Expense Tracker API",
@@ -28,6 +29,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(auth_router)
 app.include_router(expense_router)
 app.include_router(ai_router)
 
