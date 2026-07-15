@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import jwt
-from passlib.context import CryptContext
+import bcrypt
 import os
 from webauthn import (
     generate_registration_options,
@@ -28,13 +28,19 @@ RP_ID = os.getenv("RP_ID", "localhost")
 RP_NAME = "Expense Tracker AI"
 ORIGIN = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    # bcrypt requires bytes
+    return bcrypt.checkpw(
+        plain_password.encode('utf-8'), 
+        hashed_password.encode('utf-8')
+    )
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
+def get_password_hash(password: str) -> str:
+    # bcrypt requires bytes and returns bytes
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed.decode('utf-8')
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
