@@ -3,6 +3,14 @@ from bson import ObjectId
 from datetime import datetime, timezone
 
 
+def create_indexes():
+    """Create MongoDB indexes for performance. Called once on startup."""
+    # Compound index: filter by user_id + sort by created_at (covers most queries)
+    expense_collection.create_index([("user_id", 1), ("created_at", -1)], background=True)
+    # Index for type-based filtering used in dashboard stats pipelines
+    expense_collection.create_index([("user_id", 1), ("type", 1), ("created_at", 1)], background=True)
+
+
 def create_expense(expense_data: dict, user_id: str):
     expense_data["created_at"] = datetime.now(timezone.utc)
     expense_data["updated_at"] = datetime.now(timezone.utc)
@@ -16,13 +24,28 @@ def create_expense(expense_data: dict, user_id: str):
 
 def get_all_expenses(user_id: str):
     expenses = []
-
     # Sort by created_at descending (latest first)
     for expense in expense_collection.find({"user_id": user_id}).sort("created_at", -1):
         expense["_id"] = str(expense["_id"])
         expenses.append(expense)
-
     return expenses
+
+
+def get_expenses_paginated(user_id: str, limit: int = 50, skip: int = 0):
+    """Paginated version: only loads a subset of records, much faster for large datasets."""
+    expenses = []
+    cursor = (
+        expense_collection
+        .find({"user_id": user_id})
+        .sort("created_at", -1)
+        .skip(skip)
+        .limit(limit)
+    )
+    for expense in cursor:
+        expense["_id"] = str(expense["_id"])
+        expenses.append(expense)
+    total = expense_collection.count_documents({"user_id": user_id})
+    return {"expenses": expenses, "total": total, "skip": skip, "limit": limit}
 
 def delete_expense(expense_id: str, user_id: str):
     result = expense_collection.delete_one({"_id": ObjectId(expense_id), "user_id": user_id})

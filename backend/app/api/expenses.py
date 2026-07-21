@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from app.api.auth import get_current_user
 
 from app.schemas.expense import ExpenseCreate, ExpenseUpdate
@@ -7,7 +7,8 @@ from app.services.expense_service import (
     fetch_expenses,
     remove_expense,
     edit_expense,
-    fetch_dashboard_stats
+    fetch_dashboard_stats,
+    fetch_expenses_paginated
 )
 
 
@@ -23,8 +24,12 @@ def create(expense: ExpenseCreate, current_user: dict = Depends(get_current_user
 
 
 @router.get("/")
-def get_all(current_user: dict = Depends(get_current_user)):
-    return fetch_expenses(current_user["id"])
+def get_all(
+    current_user: dict = Depends(get_current_user),
+    limit: int = Query(default=50, ge=1, le=200, description="Number of expenses to return"),
+    skip: int = Query(default=0, ge=0, description="Number of expenses to skip")
+):
+    return fetch_expenses_paginated(current_user["id"], limit=limit, skip=skip)
 
 @router.delete("/{expense_id}")
 def delete(expense_id: str, current_user: dict = Depends(get_current_user)):

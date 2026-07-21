@@ -1,6 +1,7 @@
 from app.repositories.expense_repository import (
     create_expense,
     get_all_expenses,
+    get_expenses_paginated,
     delete_expense,
     update_expense,
     get_dashboard_stats
@@ -13,6 +14,9 @@ def add_expense(expense_data: dict, user_id: str):
 
 def fetch_expenses(user_id: str):
     return get_all_expenses(user_id)
+
+def fetch_expenses_paginated(user_id: str, limit: int = 50, skip: int = 0):
+    return get_expenses_paginated(user_id, limit=limit, skip=skip)
 
 def remove_expense(expense_id: str, user_id: str):
     return delete_expense(expense_id, user_id)

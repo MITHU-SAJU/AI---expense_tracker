@@ -2,17 +2,26 @@ import os
 import traceback
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from app.database.mongodb import db
 from app.api.expenses import router as expense_router
 from app.api.ai import router as ai_router
 from app.api.auth import router as auth_router
+from app.repositories.expense_repository import create_indexes
 
 app = FastAPI(
     title="AI Expense Tracker API",
     description="Backend API for AI Expense Tracker",
     version="1.0.0"
 )
+
+@app.on_event("startup")
+def on_startup():
+    create_indexes()
+
+# Enable GZip compression for responses > 1000 bytes
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # CORS: allow every origin. This is safe because we use Bearer tokens
 # (Authorization header), NOT cookies. allow_credentials is False so

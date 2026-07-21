@@ -1,14 +1,15 @@
-import { useState, useContext } from "react";
+import { useState, useContext, lazy, Suspense } from "react";
 import { AuthContext } from "./contexts/AuthContext";
 
 import Sidebar from "./components/Sidebar/Sidebar";
 import Layout from "./components/Layout/Layout";
-import Home from "./pages/Home";
-import Chatbot from "./pages/Chatbot";
-import ChartsPage from "./pages/ChartsPage";
 import VoiceModal from "./components/VoiceModal/VoiceModal";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+
+const Home = lazy(() => import("./pages/Home"));
+const Chatbot = lazy(() => import("./pages/Chatbot"));
+const ChartsPage = lazy(() => import("./pages/ChartsPage"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
 
 function App() {
   const { user, loading } = useContext(AuthContext);
@@ -23,7 +24,11 @@ function App() {
   }
 
   if (!user) {
-    return authPage === 'login' ? <Login setPage={setAuthPage} /> : <Register setPage={setAuthPage} />;
+    return (
+      <Suspense fallback={<div className="d-flex justify-content-center align-items-center vh-100">Loading...</div>}>
+        {authPage === 'login' ? <Login setPage={setAuthPage} /> : <Register setPage={setAuthPage} />}
+      </Suspense>
+    );
   }
 
   const reloadExpenses = () => {
@@ -39,15 +44,17 @@ function App() {
       />
 
       <Layout>
-        {currentPage === "home" && (
-          <Home refresh={refresh} reloadExpenses={reloadExpenses} />
-        )}
-        {currentPage === "charts" && (
-          <ChartsPage refresh={refresh} />
-        )}
-        {currentPage === "chatbot" && (
-          <Chatbot />
-        )}
+        <Suspense fallback={<div className="p-4">Loading...</div>}>
+          {currentPage === "home" && (
+            <Home refresh={refresh} reloadExpenses={reloadExpenses} />
+          )}
+          {currentPage === "charts" && (
+            <ChartsPage refresh={refresh} />
+          )}
+          {currentPage === "chatbot" && (
+            <Chatbot />
+          )}
+        </Suspense>
       </Layout>
 
       <VoiceModal 
