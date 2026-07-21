@@ -1,8 +1,11 @@
 import api from "./api";
 
-export const getExpenses = async () => {
-    const response = await api.get("/expenses/");
-    return response.data;
+export const getExpenses = async (params = {}) => {
+    const response = await api.get("/expenses/", { params });
+    if (response.data && Array.isArray(response.data.expenses)) {
+        return response.data.expenses;
+    }
+    return Array.isArray(response.data) ? response.data : [];
 };
 
 export const addExpense = async (expense) => {

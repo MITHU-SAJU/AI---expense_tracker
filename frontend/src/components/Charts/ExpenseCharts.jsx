@@ -20,7 +20,7 @@ function ExpenseCharts({ refresh }) {
   };
 
   // Prepare data for Category Pie Chart (only expenses)
-  const categoryData = expenses
+  const categoryData = (Array.isArray(expenses) ? expenses : [])
     .filter(e => e.type === "expense")
     .reduce((acc, curr) => {
       const existingCategory = acc.find(item => item.name === curr.category);

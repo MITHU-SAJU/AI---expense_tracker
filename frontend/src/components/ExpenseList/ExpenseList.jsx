@@ -114,7 +114,7 @@ function ExpenseList({ refresh, reloadExpenses }) {
   };
 
   // Derived state for display
-  const filteredExpenses = expenses.filter(expense => {
+  const filteredExpenses = (Array.isArray(expenses) ? expenses : []).filter(expense => {
     const matchesSearch = expense.description.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           expense.category.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesDate = isWithinDateFilter(expense.created_at, dateFilter);
